@@ -6,12 +6,10 @@ import Product from "../database/models/product.js";
 export const getAllOrders = async (req, res) => {
     try {
         const allOrders = await Order.findAll({
-            include: [
-                { model: User, as: 'user' },
-                { model: Product, as: 'product' }
-            ]
+         
         });
         res.status(200).json(allOrders);
+        console.log("all orders who are in this sytem", allorders);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -21,13 +19,11 @@ export const getAllOrders = async (req, res) => {
 export const getOrder = async (req, res) => {
     try {
         const order = await Order.findByPk(req.params.id, {
-            include: [
-                { model: User, as: 'user' },
-                { model: Product, as: 'product' }
-            ]
+         
         });
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
+            
         }
         res.status(200).json(order);
     } catch (error) {

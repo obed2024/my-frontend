@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import sequelize from '../../config/db.js';
 import { Model } from 'sequelize';
 
+
 class User extends Model {}
 
 User.init({
