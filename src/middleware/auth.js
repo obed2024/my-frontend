@@ -7,7 +7,7 @@ const protect=async(req,res,next)=>{
     }
     const token=authHeader.split(" ")[1];
         try{
-            res.user=jwt.verify(token,process.env.JWT_SECRET);
+            req.user=jwt.verify(token,process.env.JWT_SECRET);
             next();
         }catch(error){
             res.status(401).json({message:"Invalid token",})
