@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer — ShopAPI</title>
+  <link rel="stylesheet" href="../css/style.css"/>
+  <style>
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+
+    .product-img {
+      height: 140px;
+      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+    }
+
+    .product-body {
+      padding: 14px 16px;
+      flex:1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-name {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #1a202c;
+      margin-bottom: 4px;
+    }
+
+    .product-desc {
+      font-size: 0.8rem;
+      color: #718096;
+      line-height: 1.4;
+      margin-bottom: 10px;
+      flex:1;
+    }
+
+    .product-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    .product-price {
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #2b6cb0;
+    }
+
+    .order-section {
+      margin-top: 32px;
+    }
+
+    .order-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .order-form .form-group { margin-bottom: 0; }
+    .order-form .form-group.full { grid-column: 1 / -1; }
+
+    @media (max-width: 600px) {
+      .order-form { grid-template-columns:1fr; }
+      .products-grid { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a class="navbar-logo" href="../index.html">Shop<span>API</span></a>
+    <div class="navbar-links">
+      <a href="../index.html">Home</a>
+      <a href="customer.html" class="active">Shop</a>
+    </div>
+    <div id="nav-user-area"></div>
+  </nav>
+
+  <div class="page" style="max-width:1000px;">
+    <div class="page-title">Product Catalog</div>
+    <p class="page-sub">Browse available products and place your order</p>
+
+    <div id="products-loader" class="loader" style="padding:20px 0;">
+      <span class="spinner"></span> Loading products…
+    </div>
+    <div id="products-error" style="display:none;color:#c53030;padding:20px 0;"></div>
+    <div class="products-grid" id="products-grid" style="display:none;"></div>
+
+    <div class="order-section" id="orders">
+      <div class="card">
+        <div class="card-title">📦 Create Order</div>
+        <p style="color:var(--gray-600);font-size:0.85rem;margin-bottom:16px;">Fill in the details below to place a new order.</p>
+
+        <div class="form-error" id="order-error" style="display:none;margin-bottom:14px;"></div>
+        <div class="form-success" id="order-success" style="display:none;background:#f0fff4;border:1px solid #9ae6b4;color:#276749;border-radius:8px;padding:10px 14px;font-size:0.85rem;margin-bottom:14px;"></div>
+
+        <div class="order-form">
+          <div class="form-group full">
+            <label>Product ID *</label>
+            <input type="text" id="order-product-id" placeholder="Enter product UUID"/>
+          </div>
+          <div class="form-group">
+            <label>Quantity *</label>
+            <input type="number" id="order-quantity" value="1" min="1"/>
+          </div>
+          <div class="form-group">
+            <label>Price *</label>
+            <input type="number" id="order-price" placeholder="e.g. 49.99" min="0" step="0.01"/>
+          </div>
+          <div class="form-group full">
+            <button class="btn btn-green" id="btn-order" onclick="submitOrder()" style="width:100%;justify-content:center;">
+              Place Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/helper.js"></script>
+  <script>
+    requireLogin();
+    updateNavbar();
+
+    var allProducts = [];
+
+    function renderProducts(products) {
+      var grid = document.getElementById('products-grid');
+      if (!products.length) {
+        grid.innerHTML = '<p style="grid-column:1/-1;color:#718096;">No products available.</p>';
+        grid.style.display = 'grid';
+        return;
+      }
+      grid.innerHTML = products.map(function(p) {
+        return '<div class="product-card">' +
+          '<div class="product-img">📦</div>' +
+          '<div class="product-body">' +
+            '<div class="product-name">' + (p.name || 'Untitled Product') + '</div>' +
+            '<div class="product-desc">' + (p.description || 'No description') + '</div>' +
+            '<div class="product-footer">' +
+              '<span class="product-price">$' + (p.price || '0.00') + '</span>' +
+              '<button class="btn btn-sm btn-blue" onclick="fillProductId(\'' + p.id + '\',' + (p.price || 0) + ')">Order</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      grid.style.display = 'grid';
+    }
+
+    function fillProductId(id, price) {
+      document.getElementById('order-product-id').value = id;
+      document.getElementById('order-price').value = price;
+      document.getElementById('orders').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function submitOrder() {
+      var productId = document.getElementById('order-product-id').value.trim();
+      var quantity = parseInt(document.getElementById('order-quantity').value, 10);
+      var price = parseFloat(document.getElementById('order-price').value);
+
+      var errorEl = document.getElementById('order-error');
+      var successEl = document.getElementById('order-success');
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      if (!productId || !quantity || isNaN(price)) {
+        errorEl.textContent = 'Product ID, quantity, and price are required.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      var btn = document.getElementById('btn-order');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Placing order…';
+
+      api.createOrder({
+        prodId: productId,
+        quantity: quantity,
+        price: price
+      }).then(function(data) {
+        successEl.textContent = 'Order placed successfully! 🎉';
+        successEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+        document.getElementById('order-product-id').value = '';
+        document.getElementById('order-quantity').value = '1';
+        document.getElementById('order-price').value = '';
+      }).catch(function(err) {
+        errorEl.textContent = err.message || 'Failed to place order. Please try again.';
+        errorEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Place Order';
+      });
+    }
+
+    api.getAllProducts().then(function(data) {
+      document.getElementById('products-loader').style.display = 'none';
+      allProducts = Array.isArray(data) ? data : (data.products || data.data || []);
+      renderProducts(allProducts);
+    }).catch(function(err) {
+      document.getElementById('products-loader').style.display = 'none';
+      document.getElementById('products-error').textContent = 'Failed to load products. Please try again.';
+      document.getElementById('products-error').style.display = 'block';
+    });
+  </script>
+</body>
+</html>

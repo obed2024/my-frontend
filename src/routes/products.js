@@ -7,7 +7,7 @@ const productRoutes = express.Router();
 
 productRoutes.get('/getAllProducts',protect,authorize("admin","seller","customer"), getAllProducts);
 productRoutes.post('/createProduct',protect,authorize("admin","seller"), createProduct);
-productRoutes.get('/getProduct/:id',protect,authorize("admin","seller"),getProduct);
+productRoutes.get('/getProduct/:id',protect,authorize("admin","seller","customer"),getProduct);
 productRoutes.put('/updateProduct/:id',protect,authorize("admin","seller"), updateProduct);
 productRoutes.delete('/deleteProduct/:id',protect,authorize("admin","seller"),deleteProduct);
 

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopAPI — E-Commerce Platform</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .hero-landing {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+    .hero-landing h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #1a202c;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+    .hero-landing p {
+      color: #718096;
+      font-size: 1.05rem;
+      max-width: 540px;
+      margin: 0 auto 28px;
+      line-height: 1.6;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .features-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 32px;
+    }
+    .feature-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .feature-icon {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+    }
+    .feature-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: #1a202c;
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 0.85rem;
+      color: #718096;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 700px) {
+      .features-row { grid-template-columns: 1fr; }
+      .hero-landing h1 { font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a class="navbar-logo" href="index.html">Shop<span>API</span></a>
+    <div class="navbar-links">
+      <a href="index.html" class="active">Home</a>
+    </div>
+    <div id="nav-user-area"></div>
+  </nav>
+
+  <main class="page">
+    <div class="hero-landing">
+      <h1>Welcome to ShopAPI</h1>
+      <p>Your modern e-commerce management platform. Shop products, manage inventory, and handle orders — all in one place.</p>
+      <div class="hero-btns" id="hero-btns">
+        <a href="pages/login.html" class="btn btn-green">Log In</a>
+        <a href="pages/register.html" class="btn btn-blue">Create Account</a>
+      </div>
+    </div>
+
+    <div class="features-row">
+      <div class="feature-card">
+        <div class="feature-icon">🛒</div>
+        <div class="feature-title">For Customers</div>
+        <div class="feature-desc">Browse the full product catalog and place orders securely with just a few clicks.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🏪</div>
+        <div class="feature-title">For Sellers</div>
+        <div class="feature-desc">Create products, manage your shop, and track orders from your seller dashboard.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚙️</div>
+        <div class="feature-title">For Admins</div>
+        <div class="feature-desc">Full control over users, products, shops, and orders across the entire platform.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>ShopAPI · E-Commerce Platform · Built with Node.js & Sequelize</footer>
+
+  <script src="js/auth.js"></script>
+  <script>
+    updateNavbar();
+
+    // If user is logged in, update hero buttons to go to their dashboard
+    (function() {
+      var type = getUserType();
+      var btnWrap = document.getElementById('hero-btns');
+      if (!type || !getToken()) return;
+      var depth = 'pages/';
+      var href = depth + (type === 'customer' ? 'customer.html' : (type === 'seller' ? 'seller.html' : 'dashboard.html'));
+      btnWrap.innerHTML = '<a href="' + href + '" class="btn btn-green">Go to Dashboard</a>';
+    })();
+  </script>
+</body>
+</html>
+

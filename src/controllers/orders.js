@@ -34,7 +34,10 @@ export const getOrder = async (req, res) => {
 // create order
 export const createOrder = async (req, res) => {
     try {
-        const order = await Order.create(req.body);
+        const order = await Order.create({
+            ...req.body,
+            userId: req.user.id
+        });
         res.status(201).json({ message: "Order created successfully", order });
     } catch (error) {
         res.status(500).json({ error: error.message });

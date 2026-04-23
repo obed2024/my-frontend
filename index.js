@@ -8,15 +8,16 @@ import shopRoutes from "./src/routes/shops.js";
 import dotenv from "dotenv";
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
+import cors from 'cors';
 
 dotenv.config();
-
 
 const swaggerFile = JSON.parse(fs.readFileSync('./swagger-output.json', 'utf8'));
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5000;
 
+app.use(cors());
 app.use(express.json());
 
 // Routes
@@ -32,12 +33,12 @@ sequelize.authenticate()
     .then(() => sequelize.sync())
     .then(() => {
         app.listen(PORT, () => {
-            console.log("Database connected successfully 🔥🔥🔥");
+            console.log("Database connected successfully💯💯💯💯💯💯💯");
             // Updated to use the actual PORT variable
             console.log(`Swagger UI available at http://localhost:${PORT}/api-docs`);
         });
     })
     .catch((err) => {
-        console.log("Server failed to start", err);
+        console.log("Server failed to start⚠️⚠️⚠️⚠️⚠️", err);
         process.exit(1);
     });

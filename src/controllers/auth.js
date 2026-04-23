@@ -4,14 +4,19 @@ import User from "../database/models/users.js"
 
 export const Register = async (req, res) => {
     try {
-        const { password, ...userData } = req.body;
+        const { password, fullName, phoneNumber, ...userData } = req.body;
         const findUser = await User.findOne({ where: { email: userData.email } }); 
         if (findUser) {
             return res.status(400).json({ message: "User already exists" });
         }
         const hashpassword = await bcrypt.hash(password, 10);
-        const userAccount = await User.create({ ...userData, password: hashpassword });
-        res.status(201).json({ message: "User registered successfully🔥🔥💕", user: userAccount });
+        const userAccount = await User.create({
+            ...userData,
+            fullname: fullName,
+            phonenumber: phoneNumber,
+            password: hashpassword
+        });
+        res.status(201).json({ message: "User registered successfully", user: userAccount });
 
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message })
