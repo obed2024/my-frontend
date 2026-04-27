@@ -141,18 +141,18 @@ function login() {
     });
 }
 
-function register() {
-  var fullName = document.getElementById("reg-name").value.trim();
-  var email = document.getElementById("reg-email").value.trim();
-  var password = document.getElementById("reg-password").value.trim();
-  var phoneNumber = document.getElementById("reg-phone").value.trim();
-  var location = document.getElementById("reg-location").value.trim();
-  var gender = document.getElementById("reg-gender").value;
-  var age = parseInt(document.getElementById("reg-age").value, 10);
-  var date_of_birth = document.getElementById("reg-dob").value;
-  var type = document.getElementById("reg-type").value;
+function register(e) {
+  if (e) e.preventDefault();
 
-  if (!fullName || !email || !password || !phoneNumber || !location || !gender || !age || !date_of_birth) {
+  var fullName = document.getElementById("fullName").value.trim();
+  var email = document.getElementById("email").value.trim();
+  var phoneNumber = document.getElementById("phoneNumber").value.trim();
+  var location = document.getElementById("location").value.trim();
+  var gender = document.getElementById("gender").value.trim();
+  var password = document.getElementById("password").value.trim();
+  var role = document.getElementById("role").value.trim();   // Changed: no parseInt
+
+  if (!fullName || !email || !phoneNumber || !location || !gender || !password || !role) {
     showFormError("reg-error", "All fields are required.");
     return;
   }
@@ -167,11 +167,17 @@ function register() {
   btn.innerHTML = '<span class="spinner"></span> Creating account...';
   hideFormError("reg-error");
 
-  fetch(USER_URL, {
+  fetch("http://localhost:5000/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      fullName, email, password, phoneNumber, location, gender, age, date_of_birth, type,
+      fullName, 
+      email, 
+      phoneNumber, 
+      location, 
+      gender, 
+      password, 
+      role
     }),
   })
     .then(function (res) {
@@ -182,10 +188,14 @@ function register() {
         return data;
       });
     })
-    .then(function () {
-      window.location.href = "login.html?registered=1";
+    .then(function (data) {
+      showFormError("reg-error", data.message || "Account created successfully!");
+      setTimeout(() => {
+        window.location.href = "login.html?registered=1";
+      }, 1800);
     })
     .catch(function (err) {
+      console.error("Register error:", err);
       showFormError("reg-error", err.message || "Registration failed. Please try again.");
       btn.disabled = false;
       btn.textContent = "Create Account";

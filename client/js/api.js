@@ -26,7 +26,7 @@ const api = {
   },
 
   getAllProducts: async function () {
-    return fetch(`${API_URL}/getAllProducts`, {
+    return fetch(`${API_URL}/products`, {   // Changed to /products
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -38,7 +38,7 @@ const api = {
   },
 
   createProduct: async function (productData) {
-    return fetch(`${API_URL}/createProduct`, {
+    return fetch(`${API_URL}/products`, {   // Changed to /products
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const api = {
   },
 
   createOrder: async function (orderData) {
-    return fetch(`${API_URL}/createOrder`, {
+    return fetch(`${API_URL}/orders`, {     // Changed to /orders
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const api = {
   },
 
   getAllOrders: async function () {
-    return fetch(`${API_URL}/getAllOrders`, {
+    return fetch(`${API_URL}/orders`, {     // Changed to /orders
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -78,7 +78,7 @@ const api = {
   },
 
   getAllShops: async function () {
-    return fetch(`${API_URL}/getAllShops`, {
+    return fetch(`${API_URL}/shops`, {      // Changed to /shops
       method: "GET",
       headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -90,7 +90,7 @@ const api = {
   },
 
   createShop: async function (shopData) {
-    return fetch(`${API_URL}/createShop`, {
+    return fetch(`${API_URL}/shops`, {      // Changed to /shops
       method: "POST",
       headers: {
         "Content-Type": "application/json",
